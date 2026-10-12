@@ -1,68 +1,67 @@
 # AI/ML Stock Market Analysis Dashboard
 
-An interactive dashboard for analyzing stock market data, visualizing trends, and exploring predictions using artificial intelligence and machine learning.
+**MarketLens** is a responsive stock research dashboard built with HTML, CSS, and JavaScript. Explore illustrative price trends, compare stocks, save a watchlist, and experiment with a simple forecast model.
 
-## About the Project
+## Current features
 
-This project explores how data analysis and machine learning can support stock market research. It aims to bring historical stock data, visual analytics, and predictive modeling into one easy-to-use dashboard.
+- Five selectable demo stocks: AAPL, MSFT, NVDA, GOOGL, and AMZN.
+- Interactive charts with 1-week through 1-year ranges and a 10-observation moving average.
+- Period highs, lows, returns, and daily volatility.
+- Normalized performance comparison for up to three stocks.
+- Watchlist saved locally in your browser.
+- CSV export of the selected comparison.
+- Linear regression forecasts for 7, 14, or 30 days.
+- Responsive layouts for desktop and mobile.
 
-## Project Goals
-
-- Visualize historical stock prices and trading volume.
-- Analyze market trends using technical indicators.
-- Compare stock performance over selected periods.
-- Explore machine learning models for price forecasting.
-- Evaluate predictions against actual historical results.
-
-## Getting Started
-
-Clone the repository:
+## Run locally
 
 ```bash
-git clone <repository-url>
-cd <repository-folder>
+git clone https://github.com/ssrid111/AI-ML-stock-market-analysis-dashboard.git
+cd AI-ML-stock-market-analysis-dashboard
+python3 -m http.server 8000
 ```
 
-Install the project dependencies and launch the dashboard using the setup commands for your implementation.
+Open **http://localhost:8000** in your browser. No dependency installation or build step is required. You can also open `index.html` directly; browser storage behavior may differ for local files.
 
-**Note:** Replace the placeholders above with your repository URL and folder name. Add the dependency installation and launch commands once available.
+## Project files
 
-## Usage
+```text
+index.html   Dashboard structure
+style.css    Responsive styles
+app.js       Demo data, charts, watchlist, comparisons, and forecasts
+```
 
-1. Launch the dashboard.
-2. Choose a stock symbol and date range.
-3. Explore stock charts and available indicators.
-4. Review predictions and model evaluation results, where implemented.
+Fonts are loaded from Google Fonts when internet access is available; fallback fonts work offline.
 
-## Machine Learning Workflow
+## Data and model limitations
 
-The intended analysis workflow includes:
+All prices and market index values are synthetic or illustrative, not live quotes. Stock series contain 365 daily observations ending December 31, 2025; they do not follow an exchange trading calendar.
 
-1. Collecting historical stock market data.
-2. Cleaning and preprocessing the dataset.
-3. Creating features from prices, volume, and technical indicators.
-4. Splitting the data chronologically for training and evaluation.
-5. Training and comparing prediction models.
-6. Visualizing predictions alongside actual prices.
+The forecast fits a linear regression to the last 30 synthetic observations and projects the trend forward. Its displayed range is based on residual variation and is **not a calibrated confidence interval**. This version has no external AI service, trained production ML model, or out-of-sample evaluation.
 
 ## Roadmap
 
-- [ ] Integrate a stock market data source.
-- [ ] Build interactive price and volume charts.
-- [ ] Add technical indicators and stock comparisons.
-- [ ] Implement baseline machine learning models.
-- [ ] Add prediction charts and evaluation metrics.
-- [ ] Deploy the dashboard.
+- [x] Interactive stock dashboard and price charts.
+- [x] Moving averages and stock comparisons.
+- [x] Browser watchlist and CSV export.
+- [x] Experimental linear trend forecast.
+- [ ] Connect a real stock market data provider.
+- [ ] Add volume charts and additional technical indicators.
+- [ ] Evaluate models with chronological train/test splits.
+- [ ] Compare forecasts against a persistence baseline using MAE and RMSE.
+
+## Hosting
+
+The HTML, CSS, and JavaScript can be served by any static hosting service. A separate private Sites deployment has been retained. GitHub commits do not automatically update that deployment.
 
 ## Contributing
 
-Contributions are welcome! Open an issue to suggest improvements or report bugs. Submit a pull request with a clear description of your changes.
+Open an issue to report a bug or propose an improvement. Pull requests should describe the change and relevant verification.
 
 ## Disclaimer
 
-This project is for educational and research purposes only. Predictions are experimental, may be inaccurate, and should not be used as financial or investment advice. Historical performance does not guarantee future results.
+For educational and research purposes only. Demo values and experimental forecasts are not financial or investment advice.
 
 ## License
 
-See the repository’s license file, if provided, for usage and distribution terms.
-````
+No license has been selected. Add a license file to define permissions for reuse and distribution.
