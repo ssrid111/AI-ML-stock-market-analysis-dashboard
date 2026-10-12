@@ -1,67 +1,67 @@
 # AI/ML Stock Market Analysis Dashboard
 
-**MarketLens** is a responsive stock research dashboard built with HTML, CSS, and JavaScript. Explore illustrative price trends, compare stocks, save a watchlist, and experiment with a simple forecast model.
+**MarketLens** connects a responsive stock dashboard to Yahoo Finance price history through a small JavaScript server.
 
-## Current features
+## Features
 
-- Five selectable demo stocks: AAPL, MSFT, NVDA, GOOGL, and AMZN.
-- Interactive charts with 1-week through 1-year ranges and a 10-observation moving average.
-- Period highs, lows, returns, and daily volatility.
-- Normalized performance comparison for up to three stocks.
-- Watchlist saved locally in your browser.
-- CSV export of the selected comparison.
-- Linear regression forecasts for 7, 14, or 30 days.
-- Responsive layouts for desktop and mobile.
+- Latest available Yahoo quotes and one year of daily history for AAPL, MSFT, NVDA, GOOGL, and AMZN.
+- S&P 500, Nasdaq Composite, Dow Jones, and VIX snapshots.
+- Calendar date ranges, actual trading dates, 10-session moving averages, period highs/lows, and daily volatility.
+- Normalized stock comparisons aligned on shared trading dates.
+- Browser watchlist and CSV export.
+- Experimental linear trend forecasts for 7, 14, and 30 trading sessions.
+- Loading states, partial-data errors, manual refresh, and a five-minute server cache.
 
 ## Run locally
+
+Requires Node.js 22 or later. No dependencies or API keys are required.
 
 ```bash
 git clone https://github.com/ssrid111/AI-ML-stock-market-analysis-dashboard.git
 cd AI-ML-stock-market-analysis-dashboard
-python3 -m http.server 8000
+npm start
 ```
 
-Open **http://localhost:8000** in your browser. No dependency installation or build step is required. You can also open `index.html` directly; browser storage behavior may differ for local files.
+Open **http://127.0.0.1:8000**. Use the server rather than opening the HTML file directly: browsers request `/api/market` from it.
 
-## Project files
+```bash
+npm run build
+npm test
+```
+
+## Structure
 
 ```text
-index.html   Dashboard structure
-style.css    Responsive styles
-app.js       Demo data, charts, watchlist, comparisons, and forecasts
+public/       Dashboard HTML, CSS, and JavaScript
+worker/       Yahoo Finance connection and server routes
+scripts/      Build and local server
+tests/       Server data normalization, errors, cache, and route tests
 ```
 
-Fonts are loaded from Google Fonts when internet access is available; fallback fonts work offline.
+The build embeds the browser assets into `dist/server/index.js`, a Cloudflare Worker-compatible ES module. The local Node server runs that same module. The root `index.html`, `style.css`, and `app.js` mirror the browser assets for easy review, but `public/` is the source used by the build. GitHub Pages alone cannot run the Yahoo server connection.
 
-## Data and model limitations
+## Yahoo Finance connection
 
-All prices and market index values are synthetic or illustrative, not live quotes. Stock series contain 365 daily observations ending December 31, 2025; they do not follow an exchange trading calendar.
+`GET /api/market` retrieves fixed, allowlisted symbols from Yahoo's chart endpoint, requesting one year of daily data. Three concurrent requests limit upstream load. Responses are cached in server memory for five minutes; the cache may reset when a server instance restarts. The refresh button uses this cache until it expires.
 
-The forecast fits a linear regression to the last 30 synthetic observations and projects the trend forward. Its displayed range is based on residual variation and is **not a calibrated confidence interval**. This version has no external AI service, trained production ML model, or out-of-sample evaluation.
+The frontend displays when data was retrieved and the last available trading date. Quotes may be delayed; the latest available quote can differ from the latest daily chart close. Daily close prices are unadjusted and can reflect stock splits or other corporate actions.
 
-## Roadmap
+Yahoo's endpoint is unofficial and may change, rate-limit, or become unavailable. Errors are shown explicitly; fabricated prices are never substituted. If a refresh fails, the previously fetched snapshot remains visible with an error message. This connection requires no Yahoo login and does not access a personal Yahoo portfolio.
 
-- [x] Interactive stock dashboard and price charts.
-- [x] Moving averages and stock comparisons.
-- [x] Browser watchlist and CSV export.
-- [x] Experimental linear trend forecast.
-- [ ] Connect a real stock market data provider.
-- [ ] Add volume charts and additional technical indicators.
-- [ ] Evaluate models with chronological train/test splits.
-- [ ] Compare forecasts against a persistence baseline using MAE and RMSE.
+Use this integration for personal research and review Yahoo's data-use terms before redistribution. The [yfinance project's documentation](https://github.com/ranaroussi/yfinance) also describes Yahoo Finance data as intended for personal use; this project calls Yahoo directly and does not use the Python package.
+
+## Forecast limitations
+
+The experimental model fits linear regression to the last 30 trading observations. Forecast horizons count trading observations, not calendar days. The displayed range uses residual variation and is not a calibrated confidence interval. This is not an AI service or a validated investment model. Chronological backtesting, a persistence baseline, and MAE/RMSE evaluation are planned.
 
 ## Hosting
 
-The HTML, CSS, and JavaScript can be served by any static hosting service. A separate private Sites deployment has been retained. GitHub commits do not automatically update that deployment.
-
-## Contributing
-
-Open an issue to report a bug or propose an improvement. Pull requests should describe the change and relevant verification.
+A private Sites deployment is retained. Its audience has not changed; account access is separate from the Yahoo data connection. GitHub commits do not automatically deploy the hosted site.
 
 ## Disclaimer
 
-For educational and research purposes only. Demo values and experimental forecasts are not financial or investment advice.
+For educational and research purposes only. Data may be delayed or inaccurate. Forecasts are not financial or investment advice.
 
 ## License
 
-No license has been selected. Add a license file to define permissions for reuse and distribution.
+No license has been selected. Add a license file to define reuse and distribution terms.

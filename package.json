@@ -1,0 +1,1 @@
+{"name":"marketlens","private":true,"type":"module","scripts":{"build":"node scripts/build.mjs","start":"node scripts/build.mjs && node scripts/dev.mjs","test":"node --test tests/market.test.mjs"},"engines":{"node":">=22"}}

@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+const source=await readFile(new URL('../dist/server/index.js',import.meta.url),'utf8');
+const {default:worker,normalize}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
+const result={meta:{symbol:'AAPL',currency:'USD',regularMarketPrice:131},timestamp:Array.from({length:32},(_,i)=>1700000000+i*86400),indicators:{quote:[{close:Array.from({length:32},(_,i)=>i===5?null:100+i),volume:Array(32).fill(500)}]}};
+test('normalizes history and removes missing close values',()=>{const q=normalize(result);assert.equal(q.points.length,31);assert.equal(q.points[0].time,1700000000000);assert.equal(q.price,131);assert.equal(q.previousClose,130)});
+test('rejects insufficient history',()=>assert.throws(()=>normalize({...result,timestamp:[1]}),/Insufficient/));
+test('serves assets and rejects unknown routes',async()=>{assert.equal((await worker.fetch(new Request('https://example.com/'))).status,200);assert.equal((await worker.fetch(new Request('https://example.com/missing'))).status,404);assert.equal((await worker.fetch(new Request('https://example.com/api/market',{method:'POST'}))).status,405)});
+test('reports upstream rate limits without fabricated data then recovers and caches',async()=>{const original=globalThis.fetch;let calls=0;try{globalThis.fetch=async()=>{calls++;return new Response('',{status:429})};let r=await worker.fetch(new Request('https://example.com/api/market'));assert.equal(r.status,503);assert.match((await r.json()).error,/rate-limiting/);globalThis.fetch=async()=>{calls++;return Response.json({chart:{result:[result]}})};r=await worker.fetch(new Request('https://example.com/api/market'));assert.equal(r.status,200);const body=await r.json();assert.equal(body.source,'Yahoo Finance');assert.equal(Object.keys(body.symbols).length,9);let before=calls;await worker.fetch(new Request('https://example.com/api/market'));assert.equal(calls,before)}finally{globalThis.fetch=original}});
