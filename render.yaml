@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: marketlens-python-ml
+    runtime: python
+    plan: free
+    autoDeployTrigger: "off"
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT --workers 1
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: OMP_NUM_THREADS
+        value: "1"
+      - key: OPENBLAS_NUM_THREADS
+        value: "1"
+      - key: MKL_NUM_THREADS
+        value: "1"
