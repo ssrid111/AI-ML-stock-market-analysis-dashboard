@@ -1,5 +1,8 @@
 const SYMBOLS = ['AAPL','MSFT','NVDA','GOOGL','AMZN','^GSPC','^IXIC','^DJI','^VIX'];
 let snapshot = null;
+const stockCache=new Map();
+const pendingStocks=new Map();
+export const validSymbol=symbol=>/^[A-Z0-9^][A-Z0-9.^=-]{0,24}$/.test(symbol);
 let inFlight = null;
 const json = (value,status=200) => new Response(JSON.stringify(value), {status,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'}});
 export function normalize(result) {
@@ -7,20 +10,29 @@ export function normalize(result) {
   const points = (result.timestamp || []).map((time,i)=>({time:time*1000,close:quote?.close?.[i],volume:quote?.volume?.[i]??null})).filter(p=>Number.isFinite(p.close)&&p.close>0);
   if(points.length < 30) throw new Error('Insufficient price history');
   const meta=result.meta || {};
-  return {symbol:meta.symbol,currency:meta.currency || 'USD',exchange:meta.exchangeName || '',points,marketTime:meta.regularMarketTime?meta.regularMarketTime*1000:null,price:meta.regularMarketPrice??points.at(-1).close,previousClose:meta.previousClose??meta.regularMarketPreviousClose??points.at(-2).close};
+  return {symbol:meta.symbol,name:meta.longName || meta.shortName || meta.symbol,currency:meta.currency || 'USD',exchange:meta.exchangeName || '',points,marketTime:meta.regularMarketTime?meta.regularMarketTime*1000:null,price:meta.regularMarketPrice??points.at(-1).close,previousClose:meta.previousClose??meta.regularMarketPreviousClose??points.at(-2).close};
 }
 async function getHistory(symbol) {
   const url = new URL('https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(symbol));
   url.searchParams.set('range','1y');url.searchParams.set('interval','1d');
   const response = await fetch(url,{headers:{'User-Agent':'MarketLens/1.0 (personal educational dashboard)','Accept':'application/json'},signal:AbortSignal.timeout(15000)});
+  if(response.status===404) throw new Error('Stock symbol not found. Check the Yahoo Finance ticker and exchange suffix.');
   if(!response.ok) throw new Error(response.status===429?'Yahoo Finance is rate-limiting requests. Try again in a few minutes.':'Yahoo Finance is unavailable. Please try again later.');
   const body=await response.json();
   if(body.chart?.error || !body.chart?.result?.[0]) throw new Error('Yahoo Finance did not return valid market data.');
   return normalize(body.chart.result[0]);
 }
+async function cachedHistory(symbol){
+  const cached=stockCache.get(symbol);
+  if(cached&&Date.now()-cached.time<300000)return cached.data;
+  if(!pendingStocks.has(symbol)){
+    pendingStocks.set(symbol,getHistory(symbol).then(data=>{if(stockCache.size>=100)stockCache.delete(stockCache.keys().next().value);stockCache.set(symbol,{time:Date.now(),data});return data}).finally(()=>pendingStocks.delete(symbol)));
+  }
+  return pendingStocks.get(symbol);
+}
 async function loadMarket(){
   const results={};let next=0;
-  await Promise.all(Array.from({length:3},async()=>{while(next<SYMBOLS.length){const symbol=SYMBOLS[next++];try{results[symbol]=await getHistory(symbol)}catch(e){results[symbol]={error:e.message || 'Data unavailable'}}}}));
+  await Promise.all(Array.from({length:3},async()=>{while(next<SYMBOLS.length){const symbol=SYMBOLS[next++];try{results[symbol]=await cachedHistory(symbol)}catch(e){results[symbol]={error:e.message || 'Data unavailable'}}}}));
   if(SYMBOLS.every(s=>results[s].error)) throw new Error(results.AAPL.error);
   return {source:'Yahoo Finance',fetchedAt:new Date().toISOString(),symbols:results};
 }
@@ -28,6 +40,11 @@ export default {
   async fetch(request,env,ctx){
     const url=new URL(request.url);
     if(request.method!=='GET') return json({error:'Method not allowed'},405);
+    if(url.pathname==='/api/stock'){
+      const symbol=(url.searchParams.get('symbol')||'').trim().toUpperCase();
+      if(!validSymbol(symbol))return json({error:'Enter a valid Yahoo Finance symbol, such as TSLA, BRK-B, or RELIANCE.NS.'},400);
+      try{const stock=await cachedHistory(symbol);return json({source:'Yahoo Finance',fetchedAt:new Date(stockCache.get(symbol).time).toISOString(),stock})}catch(e){return json({error:e.message || 'Unable to retrieve this stock'},e.message?.includes('not found')?404:503)}
+    }
     if(url.pathname==='/api/market'){
       try{
         if(snapshot && Date.now()-snapshot.time<300000) return json(snapshot.data);

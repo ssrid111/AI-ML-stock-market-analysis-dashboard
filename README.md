@@ -4,7 +4,9 @@
 
 ## Features
 
-- Latest available Yahoo quotes and one year of daily history for AAPL, MSFT, NVDA, GOOGL, and AMZN.
+- Enter any supported Yahoo Finance stock ticker to analyze it, such as TSLA, BRK-B, or RELIANCE.NS.
+- Latest available quotes and one year of daily history, with prices displayed in the stock’s original currency.
+- Default AAPL, MSFT, NVDA, GOOGL, and AMZN shortcuts.
 - S&P 500, Nasdaq Composite, Dow Jones, and VIX snapshots.
 - Calendar date ranges, actual trading dates, 10-session moving averages, period highs/lows, and daily volatility.
 - Normalized stock comparisons aligned on shared trading dates.
@@ -42,7 +44,9 @@ The build embeds the browser assets into `dist/server/index.js`, a Cloudflare Wo
 
 ## Yahoo Finance connection
 
-`GET /api/market` retrieves fixed, allowlisted symbols from Yahoo's chart endpoint, requesting one year of daily data. Three concurrent requests limit upstream load. Responses are cached in server memory for five minutes; the cache may reset when a server instance restarts. The refresh button uses this cache until it expires.
+`GET /api/stock?symbol=TSLA` validates a user-entered ticker, retrieves daily Yahoo Finance history, and caches the result. Symbols use Yahoo exchange suffixes where needed (for example, RELIANCE.NS). A valid symbol must have at least 30 daily observations to support the trend model.
+
+`GET /api/market` retrieves the default stocks and market indices from Yahoo's chart endpoint, requesting one year of daily data. Three concurrent requests limit upstream load. Responses are cached in server memory for five minutes; the cache may reset when a server instance restarts. The refresh button uses this cache until it expires.
 
 The frontend displays when data was retrieved and the last available trading date. Quotes may be delayed; the latest available quote can differ from the latest daily chart close. Daily close prices are unadjusted and can reflect stock splits or other corporate actions.
 
@@ -56,7 +60,7 @@ The experimental model fits linear regression to the last 30 trading observation
 
 ## Hosting
 
-A private Sites deployment is retained. Its audience has not changed; account access is separate from the Yahoo data connection. GitHub commits do not automatically deploy the hosted site.
+The dashboard is publicly hosted at https://market-lens-swetha.swetha-sangeetha2809.chatgpt.site. Users can enter a ticker and select **Analyze stock** to load charts, indicators, and an experimental forecast. GitHub commits do not automatically deploy the hosted site.
 
 ## Disclaimer
 
