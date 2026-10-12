@@ -1,22 +1,49 @@
 # AI/ML Stock Market Analysis Dashboard
 
-**MarketLens** connects a responsive stock dashboard to Yahoo Finance price history through a small JavaScript server.
+## MarketLens
 
-## Features
+This is my stock market analysis dashboard. The idea is simple: enter a stock you're interested in and explore its performance without having to go through rows of data.
 
-- Enter any supported Yahoo Finance stock ticker to analyze it, such as TSLA, BRK-B, or RELIANCE.NS.
-- Latest available quotes and one year of daily history, with prices displayed in the stock’s original currency.
-- Default AAPL, MSFT, NVDA, GOOGL, and AMZN shortcuts.
-- S&P 500, Nasdaq Composite, Dow Jones, and VIX snapshots.
-- Calendar date ranges, actual trading dates, 10-session moving averages, period highs/lows, and daily volatility.
-- Normalized stock comparisons aligned on shared trading dates.
-- Browser watchlist and CSV export.
-- Experimental linear trend forecasts for 7, 14, and 30 trading sessions.
-- Loading states, partial-data errors, manual refresh, and a five-minute server cache.
+You can look at price history, compare stocks, save a watchlist, and try a basic forecast. It uses Yahoo Finance data, so you can search for stocks beyond the ones already listed.
 
-## Run locally
+**[Try the website here](https://market-lens-swetha.swetha-sangeetha2809.chatgpt.site/)**
 
-Requires Node.js 22 or later. No dependencies or API keys are required.
+## How to use it
+
+1. Enter a Yahoo Finance ticker, like `AAPL`, `TSLA`, or `RELIANCE.NS`.
+2. Click **Analyze stock**.
+3. Explore the charts, change the time range, and check the trend and volatility.
+4. Compare it with other stocks or add it to your watchlist.
+
+Use the ticker symbol rather than the company name. For stocks outside the US, you may need the exchange suffix—for example, `.NS` for an NSE-listed stock.
+
+## What's included so far
+
+- Stock price charts with different time ranges.
+- A 10-session moving average, period highs and lows, and daily volatility.
+- Comparisons for up to three stocks.
+- A watchlist saved in your browser.
+- CSV downloads of the comparison data.
+- Market index snapshots.
+- A simple forecast for 7, 14, or 30 trading sessions.
+
+Prices are shown in each stock's original currency. Yahoo quotes can be delayed, and the data is cached for five minutes.
+
+## About the prediction part
+
+This part is still basic. It uses linear regression on the last 30 trading observations to project the recent trend forward.
+
+It isn't an advanced AI model, and I don't want to present it as one. The range shown with the forecast is experimental, not a reliable confidence interval. A stock also needs at least 30 observations for the analysis to work.
+
+The next step is to test the forecasts properly, compare them with a simple baseline, and see where they fail before adding more models.
+
+## Built with
+
+HTML, CSS, JavaScript, and a small server that fetches data from Yahoo Finance. The hosted version runs as a Cloudflare-compatible Worker.
+
+## Run it locally
+
+You'll need **Node.js 22 or newer**.
 
 ```bash
 git clone https://github.com/ssrid111/AI-ML-stock-market-analysis-dashboard.git
@@ -24,48 +51,37 @@ cd AI-ML-stock-market-analysis-dashboard
 npm start
 ```
 
-Open **http://127.0.0.1:8000**. Use the server rather than opening the HTML file directly: browsers request `/api/market` from it.
+Then open **http://127.0.0.1:8000**.
+
+There are no packages to install or API keys to enter. Start the server instead of opening the HTML file directly—the Yahoo connection needs it.
+
+To build or run the tests:
 
 ```bash
 npm run build
 npm test
 ```
 
-## Structure
+## Finding your way around the code
 
-```text
-public/       Dashboard HTML, CSS, and JavaScript
-worker/       Yahoo Finance connection and server routes
-scripts/      Build and local server
-tests/       Server data normalization, errors, cache, and route tests
-```
+- `public/` — the dashboard's HTML, CSS, and JavaScript.
+- `worker/` — the Yahoo Finance connection and server routes.
+- `scripts/` — the build script and local server.
+- `tests/` — checks for data handling, caching, and errors.
 
-The build embeds the browser assets into `dist/server/index.js`, a Cloudflare Worker-compatible ES module. The local Node server runs that same module. The root `index.html`, `style.css`, and `app.js` mirror the browser assets for easy review, but `public/` is the source used by the build. GitHub Pages alone cannot run the Yahoo server connection.
+Make dashboard changes in `public/`. The files at the repository root are copies for easy viewing. GitHub Pages by itself won't run the server, and pushing to GitHub doesn't automatically update the hosted website.
 
-## Yahoo Finance connection
+## What I'd like to add next
 
-`GET /api/stock?symbol=TSLA` validates a user-entered ticker, retrieves daily Yahoo Finance history, and caches the result. Symbols use Yahoo exchange suffixes where needed (for example, RELIANCE.NS). A valid symbol must have at least 30 daily observations to support the trend model.
+- Volume charts and more technical indicators.
+- Proper backtesting with chronological training and testing splits.
+- Model comparisons using MAE and RMSE.
+- A better way to search by company name.
 
-`GET /api/market` retrieves the default stocks and market indices from Yahoo's chart endpoint, requesting one year of daily data. Three concurrent requests limit upstream load. Responses are cached in server memory for five minutes; the cache may reset when a server instance restarts. The refresh button uses this cache until it expires.
+## A quick note
 
-The frontend displays when data was retrieved and the last available trading date. Quotes may be delayed; the latest available quote can differ from the latest daily chart close. Daily close prices are unadjusted and can reflect stock splits or other corporate actions.
+This is a research and learning project, not an investment tool. Yahoo's unofficial endpoint can change or stop responding, and daily prices are unadjusted for corporate actions. Use the data for personal research and check Yahoo's terms before redistributing it.
 
-Yahoo's endpoint is unofficial and may change, rate-limit, or become unavailable. Errors are shown explicitly; fabricated prices are never substituted. If a refresh fails, the previously fetched snapshot remains visible with an error message. This connection requires no Yahoo login and does not access a personal Yahoo portfolio.
+Please don't make investment decisions based on the forecasts.
 
-Use this integration for personal research and review Yahoo's data-use terms before redistribution. The [yfinance project's documentation](https://github.com/ranaroussi/yfinance) also describes Yahoo Finance data as intended for personal use; this project calls Yahoo directly and does not use the Python package.
-
-## Forecast limitations
-
-The experimental model fits linear regression to the last 30 trading observations. Forecast horizons count trading observations, not calendar days. The displayed range uses residual variation and is not a calibrated confidence interval. This is not an AI service or a validated investment model. Chronological backtesting, a persistence baseline, and MAE/RMSE evaluation are planned.
-
-## Hosting
-
-The dashboard is publicly hosted at https://market-lens-swetha.swetha-sangeetha2809.chatgpt.site. Users can enter a ticker and select **Analyze stock** to load charts, indicators, and an experimental forecast. GitHub commits do not automatically deploy the hosted site.
-
-## Disclaimer
-
-For educational and research purposes only. Data may be delayed or inaccurate. Forecasts are not financial or investment advice.
-
-## License
-
-No license has been selected. Add a license file to define reuse and distribution terms.
+No license has been added yet.
