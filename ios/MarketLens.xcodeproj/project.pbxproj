@@ -1,0 +1,22 @@
+// !$*UTF8*$!
+{ archiveVersion = 1; classes = {}; objectVersion = 56; objects = {
+8639313DFCB502EC9E1AEFDA = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MarketLensApp.swift"; sourceTree = "<group>"; };
+7CC804806908F62615EEB53A = { isa = PBXBuildFile; fileRef = 8639313DFCB502EC9E1AEFDA; };
+E21E1B38B5DA3117FE4D2FE9 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Models.swift"; sourceTree = "<group>"; };
+CCE67214242E6F8EFD1B9E3D = { isa = PBXBuildFile; fileRef = E21E1B38B5DA3117FE4D2FE9; };
+4B659C0C71C0EDFBD7E71BEE = { isa = PBXFileReference; explicitFileType = wrapper.application; path = MarketLens.app; sourceTree = BUILT_PRODUCTS_DIR; };
+82D3A7536C3D7EF64F6F88F4 = { isa = PBXGroup; children = (8639313DFCB502EC9E1AEFDA,E21E1B38B5DA3117FE4D2FE9); path = MarketLens; sourceTree = "<group>"; };
+31B1211E843E8DEF921E7DDC = { isa = PBXGroup; children = (4B659C0C71C0EDFBD7E71BEE); name = Products; sourceTree = "<group>"; };
+826F2AECD19336CAB0D8A605 = { isa = PBXGroup; children = (82D3A7536C3D7EF64F6F88F4,31B1211E843E8DEF921E7DDC); sourceTree = "<group>"; };
+EE4FE986E986E8842A78EA5C = { isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (7CC804806908F62615EEB53A,CCE67214242E6F8EFD1B9E3D); runOnlyForDeploymentPostprocessing = 0; };
+8BAB77477FD23B477430949B = { isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+99D8F0B2FD47E5320EE2E1B6 = { isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+96D0282110EC518B9B401C89 = { isa = XCBuildConfiguration; name = Debug; buildSettings = { SDKROOT = iphoneos; IPHONEOS_DEPLOYMENT_TARGET = 17.0; CLANG_ENABLE_MODULES = YES; SWIFT_VERSION = 5.0; }; };
+43E283BC07D3DE7C73EABDA6 = { isa = XCBuildConfiguration; name = Debug; buildSettings = { PRODUCT_NAME = "$(TARGET_NAME)"; PRODUCT_BUNDLE_IDENTIFIER = com.swetha.portfolio.marketlens; GENERATE_INFOPLIST_FILE = YES; INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES; INFOPLIST_KEY_UILaunchScreen_Generation = YES; INFOPLIST_KEY_CFBundleDisplayName = MarketLens; TARGETED_DEVICE_FAMILY = "1,2"; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; MARKETING_VERSION = 2.0; SWIFT_EMIT_LOC_STRINGS = YES; SWIFT_OPTIMIZATION_LEVEL = "-Onone"; }; };
+7B663F4FC811179593E4A36A = { isa = XCBuildConfiguration; name = Release; buildSettings = { SDKROOT = iphoneos; IPHONEOS_DEPLOYMENT_TARGET = 17.0; CLANG_ENABLE_MODULES = YES; SWIFT_VERSION = 5.0; }; };
+B1ED7065B2E4B0D2AB3D6496 = { isa = XCBuildConfiguration; name = Release; buildSettings = { PRODUCT_NAME = "$(TARGET_NAME)"; PRODUCT_BUNDLE_IDENTIFIER = com.swetha.portfolio.marketlens; GENERATE_INFOPLIST_FILE = YES; INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES; INFOPLIST_KEY_UILaunchScreen_Generation = YES; INFOPLIST_KEY_CFBundleDisplayName = MarketLens; TARGETED_DEVICE_FAMILY = "1,2"; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; MARKETING_VERSION = 2.0; SWIFT_EMIT_LOC_STRINGS = YES; SWIFT_OPTIMIZATION_LEVEL = "-Onone"; }; };
+3CE13B6CBA42A37A39DB6881 = { isa = XCConfigurationList; buildConfigurations = (96D0282110EC518B9B401C89,7B663F4FC811179593E4A36A); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+616FBF220C8001340427A936 = { isa = XCConfigurationList; buildConfigurations = (43E283BC07D3DE7C73EABDA6,B1ED7065B2E4B0D2AB3D6496); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+E29693083D249D83B8168408 = { isa = PBXNativeTarget; buildConfigurationList = 616FBF220C8001340427A936; buildPhases = (EE4FE986E986E8842A78EA5C,99D8F0B2FD47E5320EE2E1B6,8BAB77477FD23B477430949B); buildRules = (); dependencies = (); name = MarketLens; productName = MarketLens; productReference = 4B659C0C71C0EDFBD7E71BEE; productType = "com.apple.product-type.application"; };
+C08FBA6937F978E67C285B98 = { isa = PBXProject; attributes = { LastSwiftUpdateCheck = 1600; LastUpgradeCheck = 1600; }; buildConfigurationList = 3CE13B6CBA42A37A39DB6881; compatibilityVersion = "Xcode 14.0"; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (en,Base); mainGroup = 826F2AECD19336CAB0D8A605; productRefGroup = 31B1211E843E8DEF921E7DDC; projectDirPath = ""; projectRoot = ""; targets = (E29693083D249D83B8168408); };
+}; rootObject = C08FBA6937F978E67C285B98; }
